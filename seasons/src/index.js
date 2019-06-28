@@ -1,18 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import SeasonDisplay from './seasonDisplay';
+import Spinner from './spinner';
 
 class App extends React.Component {
-    // State - JS object that contains data relevant to a component
-    // update state to get component to update its self - can only be updated using 'setState'
-    constructor(props) {
-        // pulls properties from the base class (React.Component in this case)
-        super(props);
+    // this gets made by babel as though in the constructor like previous code. both valid
+    state = {
+        lat: null,
+        errorMessage: ''
+    };
 
-        this.state = {
-            lat: null,
-            errorMessage: ''
-        };
-
+    componentDidMount() {
         window.navigator.geolocation.getCurrentPosition(
             (position) => {
                 // called setState to update state and rerender component
@@ -28,8 +26,7 @@ class App extends React.Component {
         );
     }
 
-    //React says we hve to define render
-    render() {
+    renderContent() {
         if(this.state.errorMessage && !this.state.lat) {
             return (
                 <div> 
@@ -38,19 +35,22 @@ class App extends React.Component {
             ); 
         }
 
-        if( this.state.errorMessage && this.state.lat) {
-            return (
-                <div> 
-                    Latitude: {this.state.lat}
-                </div>
-            );
+        if(!this.state.errorMessage && this.state.lat) {
+            return <SeasonDisplay lat={this.state.lat} />;
         }
 
         return (
-            <div> 
-                Loading...
-            </div>
+            <Spinner message="Please accept location request"/>
         );
+    }
+
+    //React says we hve to define render
+    render() {
+        return (
+            <div className="border red">
+                {this.renderContent()}
+            </div>
+        )
     }
 }
 
